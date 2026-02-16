@@ -1,3 +1,5 @@
+using api.Enums;
+
 namespace api.DTOs;
 
 public record CreateRoomDto(
@@ -8,7 +10,8 @@ public record CreateRoomDto(
 public record RoomResponse(
     string Id,
     string OwnerName,
-    string Name,
+    string RoomName,
     int MemberCount,
+    RoomType RoomType,
     DateTime CreatedAt
 );
