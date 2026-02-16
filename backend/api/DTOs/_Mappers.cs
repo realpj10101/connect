@@ -17,5 +17,14 @@ public static class Mappers
             Token = token,
             UserName = appUser.UserName
         };
-    
+
+    public static RoomResponse ConvertRoomToRoomResponse(Room room, string userName) =>
+        new(
+            room.Id.ToString()!,
+            userName,
+            room.Name,    
+            room.MembersCount,
+            room.RoomType,
+            room.CreatedAt
+        );
 }
