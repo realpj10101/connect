@@ -2,6 +2,7 @@ using api.DTOs;
 using api.DTOs.Helpers;
 using api.Enums;
 using api.Extensions;
+using api.Helpers;
 using api.Interfaces;
 using api.Models;
 using api.Settings;
@@ -88,6 +89,7 @@ public class RoomRepository : IRoomRepository
 
         Room room = new()
         {
+            Id = ObjectId.GenerateNewId(),
             Name = cleanRoomName,
             OwnerId = userId,
             RoomType = roomType,
@@ -132,6 +134,21 @@ public class RoomRepository : IRoomRepository
 
         return new(
             true,
+            null
+        );
+    }
+
+    public async Task<OperationResult<PagedList<Room>>> GetAllAsync(PaginationParams paginationParams,
+        CancellationToken cancellationToken)
+    {
+        IQueryable<Room> query = _collectionRooms.AsQueryable();
+
+        PagedList<Room> rooms = await PagedList<Room>.CreatePagedListAsync(query, paginationParams.PageNumber,
+            paginationParams.PageSize, cancellationToken);
+        
+        return new(
+            true,
+            rooms,
             null
         );
     }
