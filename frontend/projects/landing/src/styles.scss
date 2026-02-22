@@ -11,3 +11,14 @@ $theme-green-accent: #10b981;
 $theme-purple-accent: #8b5cf6;
 $theme-pink-accent: #ec4899;
 $theme-orange-accent: #fb923c;
+
+html,
+body {
+    height: 100%;
+}
+
+html, body {
+    margin: 0;
+    padding: 0;
+    font-family: Roboto, "Helvetica Neue", sans-serif;
+}

@@ -1,44 +1,46 @@
-.theme-blue {
-  background: $theme-blue-bg;
-  color: $theme-text-color;
-}
+  @import '../styles.scss';
 
-// .theme-green {
-//   background: $theme-green-bg;
-//   color: $theme-text-color;
-// }
+  .theme-blue {
+    background: $theme-blue-bg;
+    color: $theme-text-color;
+  }
 
-// .theme-purple {
-//   background: $theme-purple-bg;
-//   color: $theme-text-color;
-// }
+  .theme-green {
+    background: $theme-green-bg;
+    color: $theme-text-color;
+  }
 
-// .theme-pink {
-//   background: $theme-pink-bg;
-//   color: $theme-text-color;
-// }
+  .theme-purple {
+    background: $theme-purple-bg;
+    color: $theme-text-color;
+  }
 
-// .theme-orange {
-//   background: $theme-orange-bg;
-//   color: $theme-text-color;
-// }
+  .theme-pink {
+    background: $theme-pink-bg;
+    color: $theme-text-color;
+  }
 
-// .theme-blue .accent {
-//   background-color: $theme-blue-accent;
-// }
+  .theme-orange {
+    background: $theme-orange-bg;
+    color: $theme-text-color;
+  }
 
-// .theme-green .accent {
-//   background-color: $theme-green-accent;
-// }
+  .theme-blue .accent {
+    background-color: $theme-blue-accent;
+  }
 
-// .theme-purple .accent {
-//   background-color: $theme-purple-accent;
-// }
+  .theme-green .accent {
+    background-color: $theme-green-accent;
+  }
 
-// .theme-pink .accent {
-//   background-color: $theme-pink-accent;
-// }
+  .theme-purple .accent {
+    background-color: $theme-purple-accent;
+  }
 
-// .theme-orange .accent {
-//   background-color: $theme-orange-accent;
-// }
+  .theme-pink .accent {
+    background-color: $theme-pink-accent;
+  }
+
+  .theme-orange .accent {
+    background-color: $theme-orange-accent;
+  }
