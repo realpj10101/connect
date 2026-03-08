@@ -1,0 +1,255 @@
+.container {
+    // margin-top: 1rem;
+    // display: flex;
+    // flex-direction: column;
+
+    .info {
+        padding: 1rem;
+
+        .profile {
+            height: 100px;
+            width: 100px;
+            border-radius: 50%;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            font-size: 40px;
+            font-weight: 600;
+
+            background: oklch(0.45 0.18 260 / .1);
+            color: oklch(0.45 0.18 260);
+        }
+
+        .bottom {
+
+            .user-info {
+                display: flex;
+                gap: 1.5rem;
+                color: oklch(0.50 0.02 260);
+                font-size: 0.875rem;
+                font-family: sans-serif;
+
+                .info-item {
+                    display: inline-flex;
+                    align-items: center;
+                    gap: 0.5rem;
+                }
+
+                .info-item svg {
+                    stroke: currentColor;
+                }
+            }
+        }
+    }
+
+    .actions {
+        padding: 1rem;
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 1rem;
+
+        .tabs {
+            position: relative;
+            background-color: oklch(0.955 0.008 260);
+            display: flex;
+            gap: 0;
+            padding: 4px;
+            border-radius: 8px;
+            overflow: hidden;
+
+            .select {
+                // flex: 1;
+                display: flex;
+                align-items: center;
+                gap: 6px;
+                font-weight: 600;
+                padding: 6px 12px;
+                cursor: pointer;
+                z-index: 1;
+                transition:
+                    background-color 0.35s ease,
+                    color 0.35s ease;
+
+                .icon {
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    border-radius: 8px;
+                    height: 24px;
+                    width: 24px;
+                    transition: background-color 0.35s ease;
+
+                    svg {
+                        width: 18px;
+                        height: 18px;
+                        stroke-width: 2;
+                        vertical-align: middle;
+                    }
+                }
+
+                &.active {
+                    background-color: oklch(0.92 0.03 250);
+                    color: oklch(0.25 0.1 260);
+                    box-shadow: 0 0 8px oklch(0.85 0.1 250 / 0.6);
+
+                    .icon {
+                        background-color: oklch(0.5 0.15 260);
+                        color: white;
+                    }
+                }
+
+                &:active {
+                    transform: scale(0.95);
+                    transition: transform 1s;
+                }
+            }
+        }
+
+        @media (max-width: 400px) {
+            .tabs .select {
+                padding: 4px 8px;
+                gap: 4px;
+                font-size: 0.8rem;
+            }
+
+            .tabs .select .icon svg {
+                width: 16px;
+                height: 16px;
+            }
+        }
+    }
+
+
+    .user-rooms {
+        margin-top: 1rem;
+        border-radius: 14px;
+        padding: 1rem;
+        margin-left: auto;
+        margin-right: auto;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        gap: 1rem;
+
+        .header {
+            display: flex;
+            gap: 1rem;
+            flex-direction: column;
+            justify-content: space-between;
+            align-items: flex-start;
+
+            h2 {
+                margin: 0;
+                // font-size: 1.1rem;
+                font-weight: bold;
+            }
+
+            .new-room-btn {
+                display: flex;
+                align-items: center;
+                gap: 6px;
+
+                background-color: oklch(0.45 0.18 260);
+                color: white;
+                border: none;
+                border-radius: 8px;
+                padding: 0.55rem 1rem;
+                font-size: 0.9rem;
+                font-weight: bold;
+                cursor: pointer;
+
+                transition: background 0.2s ease, transform 0.15s ease;
+
+                svg {
+                    stroke: white;
+                }
+
+                &:hover {
+                    background-color: oklch(0.45 0.18 260 / 0.85);
+                }
+
+                &:active {
+                    transform: scale(0.96);
+                }
+            }
+        }
+
+        .rooms-list {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 1rem;
+
+            app-room-card {
+                flex: 1 1 280px;
+                max-width: 320px;
+            }
+        }
+
+        .empty-rooms {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            padding: 60px 20px;
+            text-align: center;
+
+            .empty-rooms h2 {
+                color: white;
+                margin: 0;
+            }
+
+            .empty-rooms p {
+                color: oklch(0.50 0.02 260);
+                margin: 0;
+            }
+
+            .new-room-btn {
+                display: flex;
+                align-items: center;
+                gap: 6px;
+
+                background-color: oklch(0.45 0.18 260);
+                color: white;
+                border: none;
+                border-radius: 8px;
+                padding: 0.55rem 1rem;
+                font-size: 0.9rem;
+                font-weight: bold;
+                cursor: pointer;
+
+                transition: background 0.2s ease, transform 0.15s ease;
+
+                svg {
+                    stroke: white;
+                }
+
+                &:hover {
+                    background-color: oklch(0.45 0.18 260 / 0.85);
+                }
+
+                &:active {
+                    transform: scale(0.96);
+                }
+            }
+        }
+    }
+
+    @media (max-width: 600px) {
+        .user-rooms {
+
+            .rooms-list {
+                justify-content: center;
+
+                app-room-card {
+                    flex: 1 1 100%;
+                    max-width: 100%;
+                }
+            }
+        }
+    }
+}
