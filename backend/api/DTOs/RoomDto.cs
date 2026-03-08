@@ -1,9 +1,11 @@
+using System.ComponentModel.DataAnnotations;
 using api.Enums;
 
 namespace api.DTOs;
 
 public record CreateRoomDto(
-    string Name,
+    [Length(1, 30, ErrorMessage = "Room name must be between 1 and 30 characters.")]
+    string RoomName,
     string RoomType
 );
 
@@ -13,5 +15,8 @@ public record RoomResponse(
     string RoomName,
     int MemberCount,
     RoomType RoomType,
-    DateTime CreatedAt
+    DateTime CreatedAt,
+    bool IsMember,
+    bool HasPendingRequest,
+    bool IsOwner
 );
