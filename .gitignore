@@ -511,3 +511,13 @@ client/Thumbs.db
 
 # Ignore Angular source maps in the frontend folder
 frontend/**/*.js.map
+
+# Angular cache
+.angular/
+frontend/.angular/
+
+
+# logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
