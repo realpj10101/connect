@@ -10,8 +10,11 @@ public static class RepositoryServiceExtensions
     {
         services.AddScoped<ITokenService, TokenService>();
         services.AddScoped<IAccountRepository, AccountRepository>();
-        services.AddScoped<IRoomRepository, RoomRepository>();
         services.AddScoped<IUserRepository, UserRepository>();
+        services.AddScoped<IRoomManagementRepository, RoomManagementRepository>();
+        services.AddScoped<IRoomMembershipRepository, RoomMembershipRepository>();
+        services.AddScoped<IRoomJoinRequestRepository, RoomJoinRequestRepository>();
+        services.AddScoped<IRoomMessageRepository, RoomMessageRepository>();
 
         return services;
     }
