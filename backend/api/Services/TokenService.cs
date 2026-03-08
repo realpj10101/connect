@@ -42,10 +42,10 @@ public class TokenService : ITokenService
 
         if (string.IsNullOrEmpty(hashedUserId))
             return null;
-
+        
         var claims = new List<Claim> {
-            new Claim(JwtRegisteredClaimNames.NameId, hashedUserId)
-            // new Claim(JwtRegisteredClaimNames.Email, appUser.Email)
+            new Claim(ClaimTypes.NameIdentifier, hashedUserId),
+            new Claim(ClaimTypes.Name, appUser.UserName)
         };
 
         // Get user's roles and add them all into claims
