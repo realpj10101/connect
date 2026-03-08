@@ -1,3 +1,5 @@
+using MongoDB.Bson;
+
 namespace api.Helpers;
 
 public class PaginationParams
