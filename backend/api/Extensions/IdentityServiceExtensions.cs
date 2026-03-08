@@ -22,17 +22,36 @@ public static class IdentityServiceExtensions
         {
             services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
                 .AddJwtBearer(options =>
-                {
-                    options.TokenValidationParameters = new TokenValidationParameters
                     {
-                        ValidateIssuerSigningKey = true,
-                        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(tokenValue)),
-                        ValidateIssuer = false,
-                        ValidateAudience = false,
-                        ValidateLifetime = true,
-                        ClockSkew = TimeSpan.Zero
-                    };
-                });
+                        options.TokenValidationParameters = new TokenValidationParameters
+                        {
+                            ValidateIssuerSigningKey = true,
+                            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(tokenValue)),
+                            ValidateIssuer = false,
+                            ValidateAudience = false,
+                            ValidateLifetime = true,
+                            ClockSkew = TimeSpan.Zero
+                        };
+                        
+                        options.Events = new JwtBearerEvents
+                        {
+                            OnMessageReceived = context =>
+                            {
+                                var accessToken = context.Request.Query["access_token"];
+
+                                var path = context.HttpContext.Request.Path;
+
+                                if (!string.IsNullOrEmpty(accessToken) &&
+                                    path.StartsWithSegments("/hubs/room-messaging"))
+                                {
+                                    context.Token = accessToken;
+                                }
+
+                                return Task.CompletedTask;
+                            }
+                        };
+                    }
+                );
         }
 
         #endregion Authentication & Authorization
@@ -73,7 +92,7 @@ public static class IdentityServiceExtensions
 
         services.AddAuthorizationBuilder()
             .AddPolicy("RequiredAdminRole", policy => policy.RequireRole("admin"))
-            .AddPolicy("ًRequiredOwnerRole", policy => policy.RequireRole("owner"));
+            .AddPolicy("RequiredOwnerRole", policy => policy.RequireRole("owner"));
 
         #endregion
 
