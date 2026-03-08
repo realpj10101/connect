@@ -1,0 +1,86 @@
+<section class="container">
+    <div class="reg-container">
+        <div class="top">
+            <div class="brand">
+                <div class="icon">
+                    <img src="comment-white.png" alt="" height="30px" width="30px">
+                </div>
+                <span>Connect</span>
+            </div>
+            <h1>Create account</h1>
+            <p>Fill in your details to get started</p>
+        </div>
+        <form>
+            <div class="inp-container">
+                <label>Username</label>
+                <input type="text" placeholder="Parsaj" [formControl]="UserNameCtrl">
+                @if (UserNameCtrl.touched && UserNameCtrl.hasError("required")) {
+                <span class="form-err">This field is required</span>
+                }
+                @else if (UserNameCtrl.hasError("minlength")) {
+                <span class="form-err">Min: {{userNameMinLength}} characters</span>
+                }
+                @else if (UserNameCtrl.hasError("maxlength")) {
+                <span class="form-err">Max: {{userNameMaxLength}} characters</span>
+                }
+            </div>
+
+            <div class="inp-container">
+                <label>Email</label>
+                <input type="email" placeholder="parsaj@example.com" [formControl]="EmailCtrl">
+                @if (EmailCtrl.touched && EmailCtrl.hasError("required")) {
+                <span class="form-err">This field is required</span>
+                }
+                @else if (EmailCtrl.hasError("pattern")) {
+                <span class="form-err">Enter valid email</span>
+                }
+                @else if (EmailCtrl.hasError("maxlength")) {
+                <span class="form-err">Max: {{emailMaxLength}} characters</span>
+                }
+            </div>
+
+            <div class="inp-container">
+                <label>Password</label>
+                <input type="password" placeholder="Create a password" [formControl]="PasswordCtrl">
+                @if (PasswordCtrl.touched && PasswordCtrl.hasError("required")) {
+                <span class="form-err">This field is required</span>
+                }
+                @else if (PasswordCtrl.hasError("minlength")) {
+                <span class="form-err">Min: {{passwordMinLength}} characters</span>
+                }
+                @else if (PasswordCtrl.hasError("maxlength")) {
+                <span class="form-err">Max: {{passwordMaxLength}} characters</span>
+                }
+            </div>
+
+            <div class="inp-container">
+                <label>Confirm password</label>
+                <input type="password" placeholder="Confirm your password" [formControl]="ConfirmPasswordCtrl">
+                @if (ConfirmPasswordCtrl.touched && ConfirmPasswordCtrl.hasError("required")) {
+                <span class="form-err">This field is required</span>
+                }
+            </div>
+
+            <div class="actions">
+                <button type="submit" (click)="register()" [disabled]="registerFg.invalid">
+                    @if (isLoadingSig()) {
+                    <div class="spinner">
+                        <svg viewBox="25 25 50 50">
+                            <circle r="20" cy="50" cx="50"></circle>
+                        </svg>
+                    </div>
+                    }
+                    @else {
+                    Create account
+                    }
+                </button>
+
+                @if (passwordsNotMatch) {
+                <p class="err">Passwords do not match!</p>
+                }
+
+                <p class="sign-in">Already have an account? <a href="/sign-in">Sign In</a></p>
+            </div>
+        </form>
+    </div>
+</section>

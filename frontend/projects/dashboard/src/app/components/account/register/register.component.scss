@@ -1,0 +1,201 @@
+.container {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    .reg-container {
+        width: 380px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        padding: 2rem 3rem;
+        border-radius: 10px;
+        border: 1px solid lightgray;
+        background: white;
+    }
+
+    .top {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        margin-bottom: 1.5rem;
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            margin-bottom: 1.8rem;
+
+            .icon {
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                height: 35px;
+                width: 35px;
+                background-color: oklch(0.45 0.18 260);
+                border-radius: 8px;
+            }
+
+            span {
+                font-weight: 700;
+                font-size: 20px;
+            }
+        }
+
+        h1 {
+            margin: 0;
+            font-size: 26px;
+        }
+
+        p {
+            margin-top: 6px;
+            color: oklch(0.50 0.02 260);
+            font-size: 14px;
+            font-weight: 500;
+        }
+    }
+
+    form {
+        width: 100%;
+        display: flex;
+        flex-direction: column;
+        gap: 1.1rem;
+
+        .inp-container {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+            position: relative;
+
+            label {
+                font-size: 14px;
+                font-weight: 500;
+            }
+
+            input {
+                border-radius: 6px;
+                padding: 0.55rem 1rem;
+                font-size: 0.95rem;
+                border: 2px solid lightgray;
+                transition: border 0.2s;
+
+                &::placeholder {
+                    color: oklch(0.50 0.02 260);
+                }
+
+                &:focus {
+                    border-color: oklch(0.45 0.18 260);
+                    outline: none;
+                }
+            }
+
+            .form-err {
+                height: 16px;
+                font-size: 13px;
+                color: red;
+            }
+        }
+
+        .actions {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 100%;
+            gap: 6px;
+            margin-top: 6px;
+
+            button {
+                width: 100%;
+                height: 40px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                font-weight: 600;
+                color: white;
+                border: none;
+                border-radius: 6px;
+                background-color: oklch(0.45 0.18 260);
+                cursor: pointer;
+                transition: all 0.2s ease;
+
+                &:hover:not(:disabled) {
+                    background-color: oklch(0.40 0.18 260);
+                    transform: translateY(-1px);
+                    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.12);
+                }
+
+                &:active:not(:disabled) {
+                    transform: translateY(0);
+                    box-shadow: none;
+                }
+
+                &:disabled {
+                    background-color: lightgray;
+                    color: gray;
+                    cursor: not-allowed;
+                }
+            }
+
+            .err {
+                height: 18px;
+                font-size: 13px;
+                color: red;
+            }
+
+            .sign-in {
+                margin-top: 6px;
+                color: oklch(0.50 0.02 260);
+                font-size: 14px;
+
+                a {
+                    text-decoration: none;
+                    color: oklch(0.45 0.18 260);
+                    font-weight: 500;
+
+                    &:hover {
+                        color: oklch(0.30 0.18 260);
+                    }
+                }
+            }
+
+            svg {
+                width: 18px;
+                height: 18px;
+                transform-origin: center;
+                animation: rotate4 2s linear infinite;
+            }
+
+            circle {
+                fill: none;
+                stroke: white;
+                stroke-width: 4;
+                stroke-dasharray: 1, 200;
+                stroke-dashoffset: 0;
+                animation: dash4 1.5s ease-in-out infinite;
+            }
+
+            @keyframes rotate4 {
+                100% {
+                    transform: rotate(360deg);
+                }
+            }
+
+            @keyframes dash4 {
+                0% {
+                    stroke-dasharray: 1, 200;
+                    stroke-dashoffset: 0;
+                }
+
+                50% {
+                    stroke-dasharray: 90, 200;
+                    stroke-dashoffset: -35px;
+                }
+
+                100% {
+                    stroke-dashoffset: -125px;
+                }
+            }
+        }
+    }
+}
