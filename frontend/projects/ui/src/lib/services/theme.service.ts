@@ -7,7 +7,7 @@ import { themes } from '../theme';
 export class ThemeService {
   private _selectedThemeSig = signal(themes[0]);
 
-  getThemes() {
+  getThemes(){
     return themes;
   }
 
