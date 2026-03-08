@@ -1,3 +1,4 @@
+using api.DTOs;
 using api.Enums;
 using MongoDB.Bson;
 using MongoDB.Bson.Serialization.Attributes;
@@ -15,11 +16,4 @@ public class Room
     public List<ObjectId> MemberIds { get; init; } = default!;
     public int MembersCount { get; init; }
     public DateTime CreatedAt { get; init; }
-    public List<JoinRequest> JoinRequests { get; init; } = default!;
 }
-
-public record JoinRequest(
-    ObjectId UserId,
-    JoinStatus Status,
-    DateTime CreatedAt
-);
