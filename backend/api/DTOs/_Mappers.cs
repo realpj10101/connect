@@ -18,13 +18,17 @@ public static class Mappers
             UserName = appUser.UserName
         };
 
-    public static RoomResponse ConvertRoomToRoomResponse(Room room, string userName) =>
+    public static RoomResponse ConvertRoomToRoomResponse(Room room, string userName, bool isMember,
+        bool hasPendingRequest, bool isOwner) =>
         new(
             room.Id.ToString()!,
             userName,
-            room.Name,    
+            room.Name,
             room.MembersCount,
             room.RoomType,
-            room.CreatedAt
+            room.CreatedAt,
+            isMember,
+            hasPendingRequest,
+            isOwner
         );
 }
