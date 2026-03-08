@@ -1,3 +1,5 @@
+using api.DTOs;
+using api.DTOs.Helpers;
 using api.Extensions;
 using api.Interfaces;
 using api.Models;
@@ -28,17 +30,46 @@ public class UserRepository : IUserRepository
     }
 
     #endregion
-    
+
     public async Task<string?> GetUserNameByIdAsync(ObjectId userId, CancellationToken cancellationToken)
     {
         string? userName = await _collectionUsers
             .Find(doc => doc.Id == userId)
             .Project(doc => doc.UserName)
             .FirstOrDefaultAsync(cancellationToken);
-        
+
         if (userName is null)
             return null;
 
         return userName;
+    }
+
+    public async Task<OperationResult<UserDto>> GetUserByIdAsync(ObjectId userId,
+        CancellationToken cancellationToken)
+    {
+        UserDto? userDto = await _collectionUsers.Find(doc => doc.Id == userId)
+            .Project(u => new UserDto(
+                u.Email ?? "Unknown",
+                u.UserName ?? "Unknown",
+                u.CreatedOn
+            ))
+            .FirstOrDefaultAsync(cancellationToken);
+
+        if (userDto is null)
+        {
+            return new(
+                false,
+                Error: new(
+                    ErrorCode.UserNotFound,
+                    "User not found"
+                )
+            );
+        }
+
+        return new(
+            true,
+            userDto,
+            null
+        );
     }
 }
