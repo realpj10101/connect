@@ -1,0 +1,139 @@
+@if (room) {
+<section class="container">
+    <div class="room-header">
+        <div class="left">
+            <div class="icon" routerLink="/dashboard">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                    stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M19 12H5" />
+                    <path d="M12 19l-7-7 7-7" />
+                </svg>
+            </div>
+            <div class="info">
+                <h2>{{room.roomName}}</h2>
+                <span>{{room.memberCount}} members</span>
+            </div>
+        </div>
+        <div class="right">
+            <button [routerLink]="['/room-details/' + room.id]">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                    stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M16 21v-2a4 4 0 0 0-3-3.87"></path>
+                    <path d="M7 21v-2a4 4 0 0 1 3-3.87"></path>
+                    <circle cx="12" cy="7" r="4"></circle>
+                    <path d="M17 11a4 4 0 1 0-3-7"></path>
+                </svg>
+            </button>
+            <button>
+                @if (room.isOwner) {
+                <button [routerLink]="['/room-details/' + room.id]">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                        stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="3" />
+                        <path
+                            d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06A1.65 1.65 0 0 0 15 19.4a1.65 1.65 0 0 0-1 .6 1.65 1.65 0 0 0-.33 1V21a2 2 0 1 1-4 0v-.1a1.65 1.65 0 0 0-.33-1 1.65 1.65 0 0 0-1-.6 1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.6 15a1.65 1.65 0 0 0-.6-1 1.65 1.65 0 0 0-1-.33H3a2 2 0 1 1 0-4h.1a1.65 1.65 0 0 0 1-.33 1.65 1.65 0 0 0 .6-1 1.65 1.65 0 0 0-.33-1.82l-.06-.06A2 2 0 1 1 7.14 3.6l.06.06A1.65 1.65 0 0 0 9 4.6c.37 0 .72-.13 1-.33.3-.22.5-.55.6-.93V3a2 2 0 1 1 4 0v.1c.1.38.3.71.6.93.28.2.63.33 1 .33a1.65 1.65 0 0 0 1.8-.94l.06-.06A2 2 0 1 1 21 6.14l-.06.06c-.47.47-.61 1.17-.33 1.82.14.33.39.61.72.8.32.2.69.31 1.07.31H21a2 2 0 1 1 0 4h-.1c-.38 0-.75.11-1.07.31-.33.19-.58.47-.72.8z" />
+                    </svg>
+                </button>
+                }
+                @else if (room.roomType === "Public" && !room.isMember) {
+                <button class="nav-btn" (click)="joinRoom()">
+                    <div class="icon">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none"
+                            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <rect width="18" height="18" x="3" y="3" rx="2" />
+                            <line x1="12" y1="8" x2="12" y2="16" />
+                            <line x1="8" y1="12" x2="16" y2="12" />
+                        </svg>
+                    </div>
+                </button>
+                }
+                @else {
+                <div class="icon" (click)="leaveRoom()">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none"
+                        stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
+                        <polyline points="16 17 21 12 16 7" />
+                        <line x1="21" y1="12" x2="9" y2="12" />
+                    </svg>
+                </div>
+                }
+            </button>
+        </div>
+    </div>
+
+    @if (notificationSig()) {
+    <div class="notification">
+        {{notificationSig()}}
+    </div>
+    }
+
+    @if (typingUsersSig().length > 0) {
+    <div class="typing-indicator-container">
+        @if (typingUsersSig().length === 1) {
+        <span class="typing-text">{{ typingUsersSig()[0] }} is typing</span>
+        } @else if (typingUsersSig().length === 2) {
+        <span class="typing-text">{{ typingUsersSig()[0] }} and {{ typingUsersSig()[1] }} are typing</span>
+        } @else {
+        <span class="typing-text">Multiple users are typing</span>
+        }
+        <span class="typing-dots"> ...</span>
+    </div>
+    }
+
+    <div class="chat-container" #chatContainer (scroll)="onScroll()">
+        @if(loadingMoreSig()) {
+        <div class="spinner">
+            <svg viewBox="25 25 50 50">
+                <circle r="20" cy="50" cx="50"></circle>
+            </svg>
+        </div>
+        }
+
+        <div class="cht-content">
+            @if (messagesSig().length === 0) {
+            <div class="empty-chat">
+                <svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 24 24" fill="none"
+                    stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2Z" />
+                </svg>
+
+                <p>Nothing here for now. Be the first to send a message!</p>
+            </div>
+            }
+            @else {
+
+            @for (message of messagesSig(); track $index) {
+            <div class="message-item" [ngClass]="getMessagesClasses(message.senderUserName)">
+                <div class="left">
+                    <span>{{message.senderUserName[0] | uppercase}}</span>
+                    <span>{{message.senderUserName[1] | uppercase}}</span>
+                </div>
+                <div class="right">
+                    <div class="top">
+                        <span class="user-name">{{message.senderUserName}}</span>
+                        <span class="message-time">{{message.timeStamp | intlRelativeTime}}</span>
+                    </div>
+                    <div class="bottom">{{message.message}}</div>
+                </div>
+            </div>
+            }
+            }
+        </div>
+    </div>
+
+    <div class="bottom">
+        <form>
+            <input type="text" placeholder="Type a message..." class="message-input" [formControl]="inpCtrl"
+                [style.direction]="direction" />
+
+            <button class="action-btn" [disabled]="!inpCtrl.value" (click)="sendMessage()">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
+                    stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <line x1="22" y1="2" x2="11" y2="13" />
+                    <polygon points="22 2 15 22 11 13 2 9 22 2" />
+                </svg>
+            </button>
+        </form>
+    </div>
+</section>
+}
