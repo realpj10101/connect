@@ -1,0 +1,184 @@
+.container {
+    display: flex;
+    flex-direction: column;
+    max-width: 425px;
+
+    padding: 1.25rem;
+    border-radius: 1rem;
+    border: 1px solid oklch(0.91 0.01 260);
+    background-color: oklch(1 0 0);
+
+    transition: all 0.2s ease-in-out;
+    cursor: pointer;
+
+    &:hover {
+        border-color: color-mix(in srgb, oklch(0.45 0.18 260) 20%, transparent);
+        box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+    }
+
+    .top {
+        display: flex;
+        justify-content: space-between;
+
+        .left {
+            display: flex;
+            gap: 10px;
+
+            h3 {
+                margin: 0;
+                font-size: 1rem;
+                white-space: nowrap;
+                overflow: hidden;
+                text-overflow: ellipsis;
+                max-width: 180px; 
+            }
+
+            span {
+                font-size: 0.75rem;
+                color: oklch(0.50 0.02 260);
+                white-space: nowrap;
+                overflow: hidden;
+                text-overflow: ellipsis;
+            }
+
+            @mixin icon {
+                display: flex;
+                align-items: center;
+                justify-content: center;
+
+                width: 2.5rem; // size-10 → w-10
+                height: 2.5rem; // size-10 → h-10
+
+                border-radius: 0.75rem; // rounded-xl
+
+                svg {
+                    width: 20px;
+                    height: 20px;
+                    fill: none;
+                    stroke-width: 2;
+                }
+            }
+
+            .public-icon {
+                @include icon();
+                background-color: oklch(0.55 0.16 145 / 0.1);
+
+                svg {
+                    stroke: oklch(0.55 0.16 145);
+                }
+            }
+
+            .private-icon {
+                @include icon();
+                background-color: oklch(0.75 0.15 65 / 0.1);
+
+                svg {
+                    stroke: oklch(0.75 0.15 65);
+                }
+            }
+        }
+
+        .right {
+            font-size: 0.75rem;
+
+            * {
+                padding-left: 10px;
+                padding-right: 10px;
+                border-radius: 1rem;
+                font-weight: bold;
+            }
+
+            .secondary {
+                background-color: oklch(0.955 0.01 260);
+                color: oklch(0.25 0.03 260);
+                border: none;
+            }
+
+            .outline {
+                background-color: transparent;
+                border: 1px solid oklch(0.91 0.01 260);
+                // color: var(--foreground);
+            }
+        }
+    }
+
+    .bottom {
+        display: flex;
+        flex-direction: column;
+
+        .top-side {
+            display: flex;
+            margin-top: 1rem;
+            margin-bottom: 1rem;
+            gap: 1rem;
+            font-size: 0.75rem;
+            color: oklch(0.50 0.02 260);
+
+            * {
+                display: flex;
+                align-items: center;
+            }
+
+            .icon {
+                height: 20px;
+                width: 20px;
+                color: oklch(0.50 0.02 260);
+                border-radius: 8px;
+            }
+        }
+
+        .actions {
+            display: flex;
+            gap: 8px;
+            width: 100%;
+
+            .btn {
+                height: 36px;
+                padding: 0 14px;
+                border-radius: 8px;
+                border: none;
+                font-size: 14px;
+                cursor: pointer;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                font-weight: bold;
+
+                &.btn-open {
+                    flex: 1;
+                    background: oklch(0.45 0.18 260);
+                    color: white;
+                }
+
+                &.btn-outline {
+                    border: 1px solid #d1d5db;
+                    background: white;
+                }
+
+                &.btn-icon {
+                    // width: 40px;
+                    flex-shrink: 0;
+                }
+
+                &.btn-full {
+                    width: 100%;
+                    background-color: oklch(0.45 0.18 260);
+                    color: white;
+                }
+
+                &.btn-req {
+                    display: flex;
+                    gap: 5px;
+                    width: 100%;
+                    background-color: oklch(0.45 0.18 260);
+                    color: white;
+                }
+
+                &.btn-Pending {
+                    width: 100%;
+                }
+            }
+        }
+
+    }
+}
