@@ -5,7 +5,13 @@ public record MessageRequest(
 );
 
 public record MessageResponseDto(
+    string Id,
     string Message,
     string SenderUserName,
     DateTime TimeStamp
+);
+
+public record MessagesPageDto(
+    List<MessageResponseDto> Messages,
+    bool HasMore
 );
