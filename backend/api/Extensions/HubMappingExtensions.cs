@@ -6,6 +6,6 @@ public static class HubMappingExtensions
 {
     public static void MapHubs(this WebApplication app)
     {
-        app.MapHub<ChatHub>("hubs/chat");
+        app.MapHub<RoomMessagingHub>("/hubs/room-messaging");
     }
 }
