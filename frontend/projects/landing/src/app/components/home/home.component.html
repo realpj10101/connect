@@ -1,0 +1,102 @@
+<section class="sec">
+  <header class="topbar">
+    <div class="left">
+      <div class="img-container">
+        <img src="comment-white.png" alt="" height="25px">
+      </div>
+      Connect
+    </div>
+
+    <div class="right">
+      <button class="sign-in" (click)="goToLogin()">
+        Sign in
+      </button>
+    </div>
+  </header>
+
+  <main>
+    <section class="sec-1">
+      <div class="left-side">
+        <div class="intro">
+          <h1 class="title">
+            Where great conversations
+            <span class="highlight"> come together</span>
+          </h1>
+          <p class="text-block">
+            Create and join chat rooms effortlessly. Public or private, Connect gives you the space to connect with the
+            people who matter.
+          </p>
+        </div>
+        <div class="action-btn">
+          <button class="start" (click)="goToDashboard()">
+            Start Chatting
+          </button>
+        </div>
+      </div>
+      <div class="right-side">
+        <div class="chat-preview">
+          <div class="cht-top">
+            <div class="profile">GD</div>
+            <div class="details">
+              <span class="room-name">General Discussion</span>
+              <span class="members">5 members online</span>
+            </div>
+          </div>
+          <div class="divide"></div>
+          <div class="cht-content">
+            @for (message of messages; track $index) {
+            <div class="message-item" [ngClass]="getMessagesClasses(message.user)">
+              <div class="left">
+                <span>{{message.user[0] | uppercase}}</span>
+                <span>{{message.user[1] | uppercase}}</span>
+              </div>
+              <div class="right">
+                <div class="top">
+                  <span class="user-name">{{message.user}}</span>
+                  <span class="message-time">{{message.timeStamp}}</span>
+                </div>
+                <div class="bottom">{{message.message}}</div>
+              </div>
+            </div>
+            }
+          </div>
+          <div class="divide"></div>
+          <div class="cht-bottom">
+            <div class="inp">
+              <span class="type">Type a message...</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="sec-2">
+      <div class="top">
+        <h1 class="feat-title">Everything you need</h1>
+        <p>Simple tools for meaningful conversations.</p>
+      </div>
+      <div class="bottom">
+        @for (feature of features; track $index) {
+        <div class="feat-card">
+          <div class="icon" [innerHTML]="feature.logo"></div>
+          <h3>{{feature.title}}</h3>
+          <p>{{feature.desc}}</p>
+        </div>
+        }
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <div class="left">
+      <div class="icon">
+        <img src="comment-white.png" alt="" height="30px" width="30px">
+      </div>
+      <span>Connect</span>
+    </div>
+    <p>Built with care by
+      <b>MOPARJ</b>
+      . Open for everyone.
+    </p>
+  </footer>
+</section>
