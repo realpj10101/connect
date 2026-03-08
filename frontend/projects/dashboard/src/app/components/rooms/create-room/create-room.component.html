@@ -1,0 +1,90 @@
+<div class="container">
+    <div class="set-card">
+        <div class="card-header">
+            <h3 class="card-title">Create a New Room</h3>
+            <p class="card-description">Set up a new chat room for your community </p>
+        </div>
+
+        <div class="card-content">
+            <form class="form">
+
+                <!-- Room Name -->
+                <div class="form-group">
+                    <label>Room Name</label>
+                    <input type="text" [formControl]="RoomNameCtrl" />
+                    @if (RoomNameCtrl.touched && RoomNameCtrl.hasError("required")) {
+                    <p class="input-error">
+                        Room name is required
+                    </p>
+                    }
+                    @else if (RoomNameCtrl.hasError("minlength")) {
+                    <p class="input-error">
+                        Room name must be at least 1 characters
+                    </p>
+                    }
+                    @else if (RoomNameCtrl.hasError("maxlength")) {
+                    <p class="input-error">
+                        Room name cannot exceed 30 characters
+                    </p>
+                    }
+                </div>
+
+                <!-- Room Type -->
+                <div class="form-group">
+                    <label>Room Type</label>
+
+                    <div class="room-types">
+
+                        <button type="button" class="type-card" [class.active]="RoomTypeCtrl.value === 'Public'"
+                            (click)="RoomTypeCtrl.setValue('Public')">
+                            <div class="icon public">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24"
+                                    fill="none" stroke="currentColor" stroke-width="2">
+                                    <circle cx="12" cy="12" r="10" />
+                                    <line x1="2" y1="12" x2="22" y2="12" />
+                                    <path d="M12 2a15 15 0 0 1 0 20" />
+                                    <path d="M12 2a15 15 0 0 0 0 20" />
+                                </svg>
+                            </div>
+
+                            <div>
+                                <p class="title">Public</p>
+                                <p class="desc">Anyone can join</p>
+                            </div>
+                        </button>
+
+                        <button type="button" class="type-card" [class.active]="RoomTypeCtrl.value === 'Private'"
+                            (click)="RoomTypeCtrl.setValue('Private')">
+                            <div class=" icon private">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24"
+                                    fill="none" stroke="currentColor" stroke-width="2">
+                                    <rect x="3" y="11" width="18" height="11" rx="2" />
+                                    <path d="M7 11V7a5 5 0 0 1 10 0v4" />
+                                </svg>
+                            </div>
+
+                            <div>
+                                <p class="title">Private</p>
+                                <p class="desc">Request to join</p>
+                            </div>
+                        </button>
+
+                    </div>
+                </div>
+
+                <button class="save-btn" [disabled]="createFg.invalid" type="submit" (click)="createRoomComp()">
+                    @if (isLoadingSig()) {
+                    <div class="spinner">
+                        <svg viewBox="25 25 50 50">
+                            <circle r="20" cy="50" cx="50"></circle>
+                        </svg>
+                    </div>
+                    }
+                    @else {
+                    Save Changes
+                    }
+                </button>
+            </form>
+        </div>
+    </div>
+</div>
