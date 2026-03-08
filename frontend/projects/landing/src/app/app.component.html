@@ -1,12 +1,1 @@
-<div [ngClass]="'theme-' + selectedTheme">
-  <h1>Welcome to Angular</h1>
-  <p>Choose a theme:</p>
-
-  @for (theme of themeService.getThemes(); track $index) {
-  <button (click)="changeTheme(theme.name)">
-    {{ theme.name }}
-  </button>
-  }
-
-  <p>Current theme: {{ selectedTheme }}</p>
-</div>
+<router-outlet />
