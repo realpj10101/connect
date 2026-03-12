@@ -1,3 +1,4 @@
+using api.Enums;
 using api.Models;
 
 namespace api.DTOs;
@@ -30,5 +31,27 @@ public static class Mappers
             isMember,
             hasPendingRequest,
             isOwner
+        );
+
+    public static AudioResponseDto ConvertAudioTAudioResponseDto(AudioMessage audio, string userName) =>
+        new(
+            audio.Id.ToString()!,
+            audio.RoomId.ToString()!,
+            userName,
+            audio.Duration,
+            audio.FileSize,
+            audio.Type,
+            audio.CreatedAt
+        );
+
+    public static ChatItemDto ConvertAudioToChatItemDto(AudioMessage audio, string userName, ChatItemType chatItemType) =>
+        new(
+            audio.Id.ToString()!,
+            chatItemType,
+            userName,
+            null,
+            audio.Duration,
+            audio.FileSize,
+            audio.CreatedAt
         );
 }
