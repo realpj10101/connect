@@ -35,7 +35,6 @@ const router = inject(Router);
 
             console.log(err.error);
             
-
             router.navigate(['account/login'])
             break;
           case 403: // Forbiden
