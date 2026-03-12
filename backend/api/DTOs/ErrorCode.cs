@@ -15,6 +15,8 @@ public enum ErrorCode
     LeftOwnRoom,
     NotRoomOwner,
     NotRoomMember,
+    SaveToDiskFailed,
+    AudioNotFound,
     NoMemberInRoom,
     MembershipPropNotExist,
     AlreadyAccepted,
