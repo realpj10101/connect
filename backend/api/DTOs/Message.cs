@@ -12,6 +12,6 @@ public record MessageResponseDto(
 );
 
 public record MessagesPageDto(
-    List<MessageResponseDto> Messages,
+    List<ChatItemDto> Messages,
     bool HasMore
 );
