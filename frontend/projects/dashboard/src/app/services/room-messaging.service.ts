@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { HubConnection, HubConnectionBuilder } from '@microsoft/signalr';
 import { environment } from '../../environments/environment.development';
 import { MessageReq, MessageRes } from '../models/message.model';
+import { ChatItem } from '../models/chat-item.model';
 
 @Injectable({
   providedIn: 'root'
@@ -67,8 +68,16 @@ export class RoomMessagingService {
     this._hubConnection?.on("LoadMessages", callBack);
   }
 
-  onReceiveMessage(callBack: (message: MessageRes) => void) {
+  onReceiveMessage(callBack: (message: ChatItem) => void) {
     this._hubConnection?.on("ReceiveMessage", callBack);
+  }
+
+  onRecieveVoice(callBack: (message: ChatItem) => void) {
+    this._hubConnection?.on("ReceiveVoice", callBack);
+  }
+
+  onRecieveAudio(callBack: (message: ChatItem) => void) {
+    this._hubConnection?.on("ReceiveAudio", callBack);
   }
 
   onUserJoined(callBack: (userName: string) => void) {
@@ -92,6 +101,8 @@ export class RoomMessagingService {
   removeListeners(): void {
     this._hubConnection?.off("LoadMessages");
     this._hubConnection?.off("ReceiveMessage");
+    this._hubConnection?.off("ReceiveVoice");
+    this._hubConnection?.off("ReceiveAudio");
     this._hubConnection?.off("UserJoined");
     this._hubConnection?.off("UserLeft");
     this._hubConnection?.off("UserTyping");
