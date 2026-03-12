@@ -1,4 +1,4 @@
-import { AfterViewChecked, Component, ElementRef, inject, OnDestroy, OnInit, signal, ViewChild } from '@angular/core';
+import { AfterViewChecked, Component, ElementRef, inject, NgZone, OnDestroy, OnInit, signal, ViewChild } from '@angular/core';
 import { ActivatedRoute, Router, RouterLink, RouterModule } from '@angular/router';
 import { RoomManagementService } from '../../../services/room-management.service';
 import { RoomMessagingService } from '../../../services/room-messaging.service';
@@ -8,36 +8,61 @@ import { MessageReq, MessageRes } from '../../../models/message.model';
 import { FormBuilder, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { IntlModule } from 'angular-ecmascript-intl';
-import { debounceTime, Subscription, tap } from 'rxjs';
+import { debounceTime, Subscription, take, tap } from 'rxjs';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { RoomMembershipService } from '../../../services/room-membership.service';
 import { RoomMessageService } from '../../../services/room-message.service';
 import { MessageParams } from '../../../models/helpers/messageParams.model';
+import { ChatItem } from '../../../models/chat-item.model';
+import { VoiceTimePipe } from '../../../pipes/voice-time.pipe';
+import { FileSizePipe } from '../../../pipes/file-size.pipe';
+import { AudioService } from '../../../services/audio.service';
+import { HttpEventType } from '@angular/common/http';
+import {
+  getStrokeOffset,
+  scrollToBottom,
+  shouldLoadMore,
+  getMessagesClasses,
+  formatTimer
+} from '../../../utils/room-view.utils';
+import { AudioPlayerService } from '../../../services/audio-player.service';
 
 @Component({
   selector: 'app-room-view',
-  imports: [RouterLink, RouterModule, CommonModule, FormsModule, ReactiveFormsModule, IntlModule],
+  imports: [
+    RouterLink, RouterModule, CommonModule, FormsModule,
+    ReactiveFormsModule, IntlModule, VoiceTimePipe, FileSizePipe],
   templateUrl: './room-view.component.html',
   styleUrl: './room-view.component.scss'
 })
 export class RoomViewComponent implements OnInit, OnDestroy {
   @ViewChild('chatContainer') chatContainer!: ElementRef;
 
-  private _route = inject(ActivatedRoute);
-  private _router = inject(Router);
   private _roomService = inject(RoomManagementService);
   private _roomMembershipService = inject(RoomMembershipService);
   private _roomMessagesService = inject(RoomMessageService);
   private _roomMessagingService = inject(RoomMessagingService);
+  private _audioService = inject(AudioService);
+  private _audioPlayerService = inject(AudioPlayerService);
+  private _route = inject(ActivatedRoute);
+  private _router = inject(Router);
   private _fB = inject(FormBuilder);
   private _snack = inject(MatSnackBar);
+  private _ngZone = inject(NgZone);
 
   private _isTyping = false;
   private _sub: Subscription | undefined;
   private _previousScrollHeight = 0;
-  private _userNearBottom = true;
+  private _currentPlayingMessage: ChatItem | null = null;
+  private _mediaRecorder!: MediaRecorder;
+  private _chunks: Blob[] = [];
+  private _timerInterval!: any;
+  private _startTime!: number;
 
-  messagesSig = signal<MessageRes[]>([]);
+  readonly radius = 14;
+  readonly circumference = 2 * Math.PI * this.radius;
+
+  messagesSig = signal<ChatItem[]>([]);
   notificationSig = signal<string | null>(null);
   typingUsersSig = signal<string[]>([]);
   loadingMoreSig = signal(false);
@@ -48,6 +73,9 @@ export class RoomViewComponent implements OnInit, OnDestroy {
   direction: 'rtl' | 'ltr' = 'ltr';
   messageParams: MessageParams | undefined;
   hasMore = true;
+  isRecording = false;
+  recordTimer = "00:00";
+  selectedAudio: File | null = null;
 
   inpCtrl = this._fB.control('');
 
@@ -88,6 +116,120 @@ export class RoomViewComponent implements OnInit, OnDestroy {
 
     this._sub?.unsubscribe();
   }
+
+  // Audio & Voice
+  async startRecording() {
+    if (this.inpCtrl.value) return;
+
+    const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+
+    this._mediaRecorder = new MediaRecorder(stream);
+    this._chunks = [];
+
+    this._mediaRecorder.ondataavailable = (e) => this._chunks.push(e.data);
+
+    this._mediaRecorder.start();
+
+    this.isRecording = true;
+    this.startTimer();
+  }
+
+  stopRecording(send: boolean): void {
+    if (!this.isRecording) return;
+
+    this._mediaRecorder.stop();
+    clearInterval(this._timerInterval);
+    this.isRecording = false;
+
+    this._mediaRecorder.onstop = () => {
+      const blob = new Blob(this._chunks, { type: 'audio/webm' });
+
+      if (!send) return;
+
+      this.uploadVoice(blob);
+    }
+  }
+
+  cancelRecording(): void {
+    if (!this.isRecording) return;
+
+    this._mediaRecorder.stop();
+    clearInterval(this._timerInterval);
+    this.isRecording = false;
+
+    this._chunks = [];
+  }
+
+  startTimer(): void {
+    this._startTime = Date.now();
+
+    this._timerInterval = setInterval(() => {
+      const diff = Date.now() - this._startTime;
+      this.recordTimer = formatTimer(diff);
+    }, 500);
+  }
+
+  uploadVoice(blob: Blob): void {
+    if (!this.id) return;
+
+    this._audioService.uploadVoice(this.id, blob).subscribe({
+      next: (res) => {
+        setTimeout(() => this.scrollToBottom(true));
+      },
+      error: (err) => {
+        this._snack.open(err.error, 'Close', {
+          duration: 5000,
+          verticalPosition: 'top',
+          horizontalPosition: 'center'
+        })
+      }
+    })
+  }
+
+  getStrokeOffsetComp(message: ChatItem): number {
+    return getStrokeOffset(message);
+  }
+
+  togglePlay(message: ChatItem): void {
+    this._audioPlayerService.togglePlay(message);
+  }
+
+  downloadAudioComp(message: ChatItem, autoPlay = false) {
+    this._audioPlayerService.downloadAudio(message, autoPlay);
+  }
+
+  onAudioSelected(event: Event): void {
+    const input = event.target as HTMLInputElement;
+
+    if (!input.files || input.files.length === 0) return;
+
+    this.selectedAudio = input.files[0];
+  }
+
+  cancelAudio(): void {
+    this.selectedAudio = null;
+  }
+
+  uploadSelectedAudio(): void {
+    if (!this.selectedAudio) return;
+
+    if (this.id) {
+      this._audioService.uploadAudio(this.id, this.selectedAudio).subscribe({
+        next: (res) => {
+          this.selectedAudio = null;
+        },
+        error: (err) => {
+          this._snack.open(err.error, 'Close', {
+            horizontalPosition: 'center',
+            verticalPosition: 'top',
+            duration: 5000
+          })
+        }
+      });
+    }
+  }
+
+  // Message & Room
 
   leaveRoomAction(): void {
     if (this.room?.roomType === "Private")
@@ -175,6 +317,20 @@ export class RoomViewComponent implements OnInit, OnDestroy {
       this.scrollToBottom(true);
     })
 
+    this._roomMessagingService.onRecieveVoice((msgs) => {
+      this.messagesSig.update(m => [...m, msgs]);
+
+      this.scrollToBottom(true);
+    })
+
+    this._roomMessagingService.onRecieveAudio((msgs) => {
+      console.log(msgs);
+      
+      this.messagesSig.update(m => [...m, msgs]);
+
+      this.scrollToBottom();
+    })
+
     this._roomMessagingService.onUserJoined((user) => {
       this.showNotification(`${user} joined the chat`);
     });
@@ -210,38 +366,27 @@ export class RoomViewComponent implements OnInit, OnDestroy {
     this._roomMessagingService.stopTyping(this.id);
   }
 
-  getMessagesClasses(userName: string): string {
-    if (userName == this.loggedInUser?.userName) {
-      return 'system-message';
-    }
+  sendMessageIfTextExists(event: SubmitEvent) {
+    event.preventDefault();
 
-    return 'other-user';
+    if (!this.inpCtrl.value || this.inpCtrl.value.trim() === "") return;
+
+    this.sendMessage();
+  }
+
+  getMessagesClasses(userName: string): string {
+    return getMessagesClasses(userName, this.loggedInUser?.userName ?? '');
   }
 
   scrollToBottom(smooth = true): void {
-    setTimeout(() => {
-      const element = this.chatContainer?.nativeElement;
-      if (!element) return;
-
-      element.scrollTo({
-        top: element.scrollHeight,
-        behavior: smooth ? 'smooth' : 'auto'
-      });
-    });
+    scrollToBottom(this.chatContainer, this._ngZone, smooth);
   }
 
   onScroll(): void {
     const element = this.chatContainer.nativeElement;
 
-    const threshold = 120;
-
-    this._userNearBottom =
-      element.scrollHeight - element.scrollTop - element.clientHeight < threshold;
-
-    if (element.scrollTop <= 50 && this.hasMore && !this.loadingMoreSig()) {
-
+    if (shouldLoadMore(element, 50) && this.hasMore && !this.loadingMoreSig()) {
       this._previousScrollHeight = element.scrollHeight;
-
       this.loadingMoreSig.set(true);
       this.getRoomMessages(this.id!);
     }

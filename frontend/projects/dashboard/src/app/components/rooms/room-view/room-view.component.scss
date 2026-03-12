@@ -124,6 +124,16 @@
         flex: 1;
         overflow-y: auto;
 
+        .cht-content {
+            max-width: 900px;
+            width: 100%;
+            margin: 0 auto;
+
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
         .spinner {
             display: flex;
             justify-content: center;
@@ -259,6 +269,168 @@
                         word-break: break-word;
                         overflow-wrap: anywhere;
                         white-space: pre-wrap;
+
+                        .voice-message {
+                            display: flex;
+                            align-items: center;
+                            gap: 12px;
+
+                            background: oklch(0.955 0.008 260);
+                            padding: 10px 14px;
+                            border-radius: 14px;
+
+                            .voice-btn {
+                                width: 34px;
+                                height: 34px;
+                                border: none;
+                                border-radius: 50%;
+                                background: oklch(0.45 0.18 260);
+                                color: white;
+                                display: flex;
+                                justify-content: center;
+                                align-items: center;
+                                cursor: pointer;
+
+                                transition: background 0.2s ease, transform 0.15s;
+                            }
+
+                            .voice-btn:hover {
+                                background: oklch(0.40 0.18 260);
+                                transform: scale(1.07);
+                            }
+
+                            .voice-btn:active {
+                                transform: scale(0.95);
+                            }
+
+                            .icon {
+                                width: 20px;
+                                height: 20px;
+                            }
+
+                            .voice-wave {
+                                display: flex;
+                                align-items: end;
+                                gap: 4px;
+                            }
+
+                            .voice-wave span {
+                                width: 4px;
+                                height: 12px;
+                                background: oklch(0.45 0.18 260);
+                                border-radius: 2px;
+                                animation: wave 0.9s ease-in-out infinite;
+                            }
+
+                            .voice-wave span:nth-child(2) {
+                                height: 18px;
+                                animation-delay: 0.1s
+                            }
+
+                            .voice-wave span:nth-child(3) {
+                                height: 22px;
+                                animation-delay: 0.2s
+                            }
+
+                            .voice-wave span:nth-child(4) {
+                                height: 16px;
+                                animation-delay: 0.3s
+                            }
+
+                            .voice-wave span:nth-child(5) {
+                                height: 12px;
+                                animation-delay: 0.4s
+                            }
+
+                            .voice-duration {
+                                font-size: 13px;
+                                color: oklch(0.40 0.02 260);
+                            }
+
+                            .voice-wave span {
+                                animation: wave 0.9s ease-in-out infinite;
+                                opacity: 0.4;
+                            }
+
+                            .voice-wave:not(.active) span {
+                                animation: none;
+                                opacity: 0.2;
+                            }
+                        }
+
+                        .audio-message {
+                            display: flex;
+                            align-items: center;
+                            gap: 10px;
+                            background: oklch(0.955 0.008 260);
+                            padding: 10px 12px;
+                            border-radius: 12px;
+
+                            .audio-btn {
+                                width: 32px;
+                                height: 32px;
+                                min-width: 32px;
+                                min-height: 32px;
+                                border-radius: 50%;
+                                background: oklch(0.45 0.18 260);
+                                display: flex;
+                                align-items: center;
+                                justify-content: center;
+                                cursor: pointer;
+                                transition: 0.2s;
+                            }
+
+                            .audio-btn.downloading {
+                                position: relative;
+                                background: white;
+                            }
+
+                            .progress-ring {
+                                transform: rotate(-90deg);
+                            }
+
+                            .progress-bg {
+                                fill: transparent;
+                                stroke: #e5e7eb;
+                                stroke-width: 3;
+                            }
+
+                            .progress-bar {
+                                fill: transparent;
+                                stroke: oklch(0.45 0.18 260);
+                                stroke-width: 3;
+                                stroke-linecap: round;
+                                stroke-dasharray: 88;
+                                transition: stroke-dashoffset 0.2s linear;
+                            }
+
+                            .icon {
+                                width: 18px;
+                                height: 18px;
+                                color: white;
+                                transition: transform 0.2s ease;
+                            }
+
+                            .audio-btn:hover .icon {
+                                transform: scale(1.12);
+                            }
+
+                            .audio-info {
+                                display: flex;
+                                flex-direction: column;
+
+                                .audio-title {
+                                    font-size: 13px;
+                                    color: black;
+                                    font-weight: 600;
+                                }
+
+                                .audio-meta {
+                                    font-size: 11px;
+                                    color: oklch(0.50 0.02 260);
+                                }
+                            }
+                        }
                     }
                 }
             }
@@ -293,7 +465,184 @@
         z-index: 10;
         padding: 10px;
 
+        .attach-btn {
+            position: absolute;
+            right: 70px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            // width: 38px;
+            // height: 38px;
+            border-radius: 50%;
+            border: none;
+            background: none;
+            color: #4b5563;
+            cursor: pointer;
+            transition: transform 0.2s ease, color 0.2s ease;
+
+            svg {
+                stroke-width: 2;
+            }
+
+            &:hover {
+                color: oklch(0.55 0.18 260);
+                transform: translateY(-1px);
+            }
+
+            &:active {
+                transform: scale(0.95);
+            }
+        }
+
+        .audio-preview {
+            max-width: 900px;
+            margin: 0 auto;
+            background: #f8fafc;
+            border: 1px solid #e5e7eb;
+            border-radius: 14px;
+            padding: 10px 14px;
+            display: flex;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 12px;
+
+            .file-info {
+                display: flex;
+                align-items: center;
+                gap: 8px;
+                color: #374151;
+
+                .name {
+                    font-weight: 600;
+                    margin: 0;
+                }
+
+                .meta {
+                    font-size: 12px;
+                    color: #9ca3af;
+                    margin: 0;
+                }
+            }
+
+            .upload-actions {
+                display: flex;
+                gap: 8px;
+
+                .upload-btn {
+                    background: oklch(0.55 0.18 260);
+                    color: white;
+                    border: none;
+                    padding: 6px 14px;
+                    border-radius: 8px;
+                    font-size: 14px;
+                    cursor: pointer;
+                    transition: transform 0.2s ease, background 0.3s ease;
+
+                    &:hover {
+                        background: oklch(0.5 0.18 260);
+                        transform: translateY(-1px);
+                    }
+
+                    &:active {
+                        transform: scale(0.94);
+                    }
+                }
+
+                .cancel-btn {
+                    background: #ef4444;
+                    color: white;
+                    border: none;
+                    padding: 6px 14px;
+                    border-radius: 8px;
+                    font-size: 14px;
+                    cursor: pointer;
+                    transition: transform 0.2s ease;
+
+                    &:hover {
+                        background: #dc2626;
+                    }
+
+                    &:active {
+                        transform: scale(0.94);
+                    }
+                }
+            }
+
+            &.fadeIn {
+                animation: fadeIn 0.25s ease;
+            }
+        }
+
+
+        .voice-recording {
+            // width: 100%;
+            max-width: 900px;
+            margin: 0 auto;
+
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+
+            background: #f8fafc;
+            padding: 10px 14px;
+            border-radius: 14px;
+            border: 1px solid #e5e7eb;
+
+            animation: fadeIn 0.25s ease;
+
+            .timer {
+                font-size: 16px;
+                font-weight: 600;
+                color: #ef4444;
+            }
+
+            .cancel-btn {
+                background: #ef4444;
+                color: white;
+                border: none;
+                padding: 7px 16px;
+                border-radius: 10px;
+                font-size: 14px;
+                cursor: pointer;
+                transition: transform 0.2s ease;
+
+                &:active {
+                    transform: scale(0.92);
+                }
+            }
+
+            .send-record-btn {
+                background: oklch(0.55 0.18 260);
+                color: white;
+                border: none;
+                padding: 7px 16px;
+                border-radius: 10px;
+                font-size: 14px;
+                cursor: pointer;
+                transition: transform 0.2s ease;
+
+                &:active {
+                    transform: scale(0.92);
+                }
+            }
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
         form {
+            position: relative;
             width: 100%;
             max-width: 900px;
             margin: 0 auto;
@@ -331,13 +680,12 @@
             height: 40px;
 
             border: none;
-            border-radius: 10px;
-
+            border-radius: 50%;
             background: oklch(0.55 0.18 260);
             color: white;
 
             cursor: pointer;
-            transition: all 0.2s ease;
+            transition: background 0.25s ease, transform 0.25s ease, opacity 0.25s ease;
 
             &:hover {
                 background: oklch(0.50 0.18 260);
@@ -352,6 +700,23 @@
                 background: #e5e7eb;
                 color: #9ca3af;
                 cursor: not-allowed;
+            }
+
+            svg {
+                transition: transform 0.25s ease, opacity 0.25s ease;
+            }
+
+            .icon {
+                position: absolute;
+                transition: opacity 0.2s ease, transform 0.2s ease;
+            }
+
+            &:active {
+                transform: scale(1.08);
+            }
+
+            &:active svg {
+                transform: scale(1.1);
             }
         }
     }
