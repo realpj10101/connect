@@ -7,7 +7,7 @@ namespace api.Interfaces;
 
 public interface IRoomMessageRepository
 {
-    public Task<OperationResult<MessageResponseDto>> SavedMessageAsync(MessageRequest req, ObjectId userId,
+    public Task<OperationResult<ChatItemDto>> SavedMessageAsync(MessageRequest req, ObjectId userId,
         ObjectId roomId, CancellationToken cancellationToken);
 
     public Task<OperationResult<MessagesPageDto>> GetAllMessagesAsync(ObjectId roomId, ObjectId userId,

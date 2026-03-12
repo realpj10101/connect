@@ -18,6 +18,7 @@ public class RoomMessageRepository : IRoomMessageRepository
     private readonly IMongoCollection<AppUser> _collectionUsers;
     private readonly IMongoCollection<Room> _collectionRooms;
     private readonly IMongoCollection<RoomChat> _collectionChats;
+    private readonly IMongoCollection<AudioMessage> _collectionAudios;
 
     public RoomMessageRepository(IMongoClient client, IMyMongoDbSettings dbSettings)
     {
@@ -25,12 +26,13 @@ public class RoomMessageRepository : IRoomMessageRepository
         _collectionUsers = database.GetCollection<AppUser>(AppVariablesExtensions.CollectionUsers);
         _collectionRooms = database.GetCollection<Room>(AppVariablesExtensions.CollectionRooms);
         _collectionChats = database.GetCollection<RoomChat>(AppVariablesExtensions.CollectionRoomsChats);
+        _collectionAudios = database.GetCollection<AudioMessage>(AppVariablesExtensions.CollectionAudios);
         database.GetCollection<MembershipProposal>(AppVariablesExtensions.CollectionMembershipProposals);
     }
 
     #endregion
 
-    public async Task<OperationResult<MessageResponseDto>> SavedMessageAsync(MessageRequest req, ObjectId userId,
+    public async Task<OperationResult<ChatItemDto>> SavedMessageAsync(MessageRequest req, ObjectId userId,
         ObjectId roomId, CancellationToken cancellationToken)
     {
         if (userId == ObjectId.Empty || roomId == ObjectId.Empty)
@@ -98,11 +100,14 @@ public class RoomMessageRepository : IRoomMessageRepository
 
         return new(
             true,
-            new MessageResponseDto(
-                Id: chat.Id.ToString()!,
-                Message: req.Message,
-                SenderUserName: senderUserName,
-                TimeStamp: chat.TimeStamp
+            new ChatItemDto(
+                chat.Id.ToString()!,
+                ChatItemType.Text,
+                senderUserName,
+                chat.Message,
+                null,
+                null,
+                chat.TimeStamp
             ),
             null
         );
@@ -150,28 +155,36 @@ public class RoomMessageRepository : IRoomMessageRepository
             );
         }
 
-        var filter = Builders<RoomChat>.Filter.Eq(m => m.RoomId, roomId);
+        var textFilter = Builders<RoomChat>.Filter.Eq(m => m.RoomId, roomId);
+        var audioFilter = Builders<AudioMessage>.Filter.Eq(a => a.RoomId, roomId);
 
         if (messageParams.LastMessageId.HasValue)
         {
-            filter &= Builders<RoomChat>.Filter.Lt(m => m.Id, messageParams.LastMessageId.Value);
+            textFilter &= Builders<RoomChat>.Filter.Lt(m => m.Id, messageParams.LastMessageId.Value);
+            audioFilter &= Builders<AudioMessage>.Filter.Lt(a => a.Id, messageParams.LastMessageId.Value);
         }
 
-        List<RoomChat> messages =
+        int fetchSize = messageParams.Limit * 2;
+
+        List<RoomChat> textMessages =
             await _collectionChats
-                .Find(filter)
+                .Find(textFilter)
                 .SortByDescending(m => m.Id)
-                .Limit(messageParams.Limit + 1)
+                .Limit(fetchSize)
                 .ToListAsync(cancellationToken);
 
-        bool hasMore = messages.Count() > messageParams.Limit;
+        List<AudioMessage> audioMessages =
+            await _collectionAudios
+                .Find(audioFilter)
+                .SortByDescending(a => a.Id)
+                .Limit(fetchSize)
+                .ToListAsync(cancellationToken);
 
-        if (hasMore)
-        {
-            messages.RemoveAt(messages.Count() - 1);
-        }
-
-        List<ObjectId> senderIds = messages.Select(item => item.SenderId).Distinct().ToList();
+        List<ObjectId> senderIds = textMessages
+            .Select(item => item.SenderId)
+            .Concat(audioMessages.Select(item => item.UploaderId))
+            .Distinct()
+            .ToList();
 
         var users = await _collectionUsers
             .Find(doc => senderIds.Contains(doc.Id))
@@ -180,21 +193,44 @@ public class RoomMessageRepository : IRoomMessageRepository
 
         var userDict = users.ToDictionary(u => u.Id, u => u.UserName);
 
-        List<MessageResponseDto> messagesDto = messages.Select(m => new MessageResponseDto(
+        IEnumerable<ChatItemDto> textDtos = textMessages.Select(m => new ChatItemDto(
             m.Id.ToString()!,
-            m.Message,
+            ChatItemType.Text,
             userDict.GetValueOrDefault(m.SenderId) ?? "Unknown",
+            m.Message,
+            null,
+            null,
             m.TimeStamp
-        )).ToList();
+        ));
 
-        MessagesPageDto res = new(
-            messagesDto,
-            hasMore
-        );
+        IEnumerable<ChatItemDto> audioDtos = audioMessages.Select(a => new ChatItemDto(
+            a.Id.ToString()!,
+            a.Type == AudioType.Voice ? ChatItemType.Voice : ChatItemType.Audio,
+            userDict.GetValueOrDefault(a.UploaderId) ?? "Unknown",
+            null,
+            a.Duration,
+            a.FileSize,
+            a.CreatedAt
+        ));
+
+        List<ChatItemDto> combined = textDtos
+            .Concat(audioDtos)
+            .OrderByDescending(item => item.CreatedAt)
+            .Take(messageParams.Limit + 1)
+            .ToList();
+
+        bool hasMore = combined.Count > messageParams.Limit;
+
+        if (hasMore)
+        {
+            combined.RemoveAt(combined.Count - 1);
+        }
+
+        var result = new MessagesPageDto(combined, hasMore);
 
         return new(
             true,
-            res,
+            result,
             null
         );
     }

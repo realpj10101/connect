@@ -17,3 +17,4 @@ public class Room
     public int MembersCount { get; init; }
     public DateTime CreatedAt { get; init; }
 }
+
