@@ -8,4 +8,5 @@ public class AppVariablesExtensions
     public const string CollectionRooms = "rooms";
     public const string CollectionRoomsChats = "rooms-chats";
     public const string CollectionMembershipProposals = "membership-proposals";
+    public const string CollectionAudios = "audios";
 }
