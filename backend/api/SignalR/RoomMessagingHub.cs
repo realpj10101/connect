@@ -46,7 +46,7 @@ public class RoomMessagingHub : Hub
             throw new HubException("User ID could not be retrieved.");
         }
 
-        OperationResult<MessageResponseDto> res =
+        OperationResult<ChatItemDto> res =
             await _roomMessageRepository.SavedMessageAsync(req, userId.Value, parsedRoomId, cancellationToken);
 
         if (!res.IsSuccess)
