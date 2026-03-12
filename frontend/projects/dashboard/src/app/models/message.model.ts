@@ -1,3 +1,5 @@
+import { ChatItem } from "./chat-item.model";
+
 export interface MessageReq {
     message: string;
 }
@@ -10,6 +12,6 @@ export interface MessageRes {
 }
 
 export interface MessagePage {
-    messages: MessageRes[];
+    messages: ChatItem[];
     hasMore: boolean;
 }
