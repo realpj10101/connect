@@ -6,7 +6,7 @@ namespace api.Interfaces;
 
 public interface IUserRepository
 {
-    public Task<string> GetUserNameByIdAsync(ObjectId userId, CancellationToken cancellationToken);
+    public Task<string?> GetUserNameByIdAsync(ObjectId userId, CancellationToken cancellationToken);
     
     public Task<OperationResult<UserDto>> GetUserByIdAsync(ObjectId userId, CancellationToken cancellationToken);
 }
