@@ -15,6 +15,8 @@ public static class RepositoryServiceExtensions
         services.AddScoped<IRoomMembershipRepository, RoomMembershipRepository>();
         services.AddScoped<IRoomJoinRequestRepository, RoomJoinRequestRepository>();
         services.AddScoped<IRoomMessageRepository, RoomMessageRepository>();
+        services.AddScoped<IAudioService, AudioService>();
+        services.AddScoped<IAudioRepository, AudioRepository>();
 
         return services;
     }
