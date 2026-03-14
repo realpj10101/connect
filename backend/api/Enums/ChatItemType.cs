@@ -4,5 +4,12 @@ public enum ChatItemType
 {
     Text,
     Voice,
-    Audio
+    Audio,
+    Video,
+    Image,
+    Document,
+    Archive,
+    Gif,
+    Sticker,
+    Unknown
 }
