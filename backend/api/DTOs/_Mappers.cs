@@ -33,17 +33,6 @@ public static class Mappers
             isOwner
         );
 
-    public static AudioResponseDto ConvertAudioTAudioResponseDto(AudioMessage audio, string userName) =>
-        new(
-            audio.Id.ToString()!,
-            audio.RoomId.ToString()!,
-            userName,
-            audio.Duration,
-            audio.FileSize,
-            audio.Type,
-            audio.CreatedAt
-        );
-
     public static ChatItemDto ConvertAudioToChatItemDto(RoomMessage audio, string userName, ChatItemType chatItemType) =>
         new(
             audio.Id.ToString()!,

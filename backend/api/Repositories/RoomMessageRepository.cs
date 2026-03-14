@@ -18,15 +18,12 @@ public class RoomMessageRepository : IRoomMessageRepository
     private readonly IMongoCollection<AppUser> _collectionUsers;
     private readonly IMongoCollection<Room> _collectionRooms;
     private readonly IMongoCollection<RoomMessage> _collectionChats;
-    private readonly IMongoCollection<AudioMessage> _collectionAudios;
-
     public RoomMessageRepository(IMongoClient client, IMyMongoDbSettings dbSettings)
     {
         var database = client.GetDatabase(dbSettings.DatabaseName);
         _collectionUsers = database.GetCollection<AppUser>(AppVariablesExtensions.CollectionUsers);
         _collectionRooms = database.GetCollection<Room>(AppVariablesExtensions.CollectionRooms);
         _collectionChats = database.GetCollection<RoomMessage>(AppVariablesExtensions.CollectionRoomsChats);
-        _collectionAudios = database.GetCollection<AudioMessage>(AppVariablesExtensions.CollectionAudios);
         database.GetCollection<MembershipProposal>(AppVariablesExtensions.CollectionMembershipProposals);
     }
 
