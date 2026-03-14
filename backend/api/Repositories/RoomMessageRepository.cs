@@ -17,7 +17,7 @@ public class RoomMessageRepository : IRoomMessageRepository
 
     private readonly IMongoCollection<AppUser> _collectionUsers;
     private readonly IMongoCollection<Room> _collectionRooms;
-    private readonly IMongoCollection<RoomChat> _collectionChats;
+    private readonly IMongoCollection<RoomMessage> _collectionChats;
     private readonly IMongoCollection<AudioMessage> _collectionAudios;
 
     public RoomMessageRepository(IMongoClient client, IMyMongoDbSettings dbSettings)
@@ -25,7 +25,7 @@ public class RoomMessageRepository : IRoomMessageRepository
         var database = client.GetDatabase(dbSettings.DatabaseName);
         _collectionUsers = database.GetCollection<AppUser>(AppVariablesExtensions.CollectionUsers);
         _collectionRooms = database.GetCollection<Room>(AppVariablesExtensions.CollectionRooms);
-        _collectionChats = database.GetCollection<RoomChat>(AppVariablesExtensions.CollectionRoomsChats);
+        _collectionChats = database.GetCollection<RoomMessage>(AppVariablesExtensions.CollectionRoomsChats);
         _collectionAudios = database.GetCollection<AudioMessage>(AppVariablesExtensions.CollectionAudios);
         database.GetCollection<MembershipProposal>(AppVariablesExtensions.CollectionMembershipProposals);
     }
@@ -87,27 +87,28 @@ public class RoomMessageRepository : IRoomMessageRepository
             );
         }
 
-        RoomChat chat = new()
+        RoomMessage message = new()
         {
             Id = ObjectId.GenerateNewId(),
             RoomId = roomId,
             SenderId = userId,
+            Type = ChatItemType.Text,
             Message = req.Message,
             TimeStamp = DateTime.UtcNow
         };
 
-        await _collectionChats.InsertOneAsync(chat, null, cancellationToken);
+        await _collectionChats.InsertOneAsync(message, null, cancellationToken);
 
         return new(
             true,
             new ChatItemDto(
-                chat.Id.ToString()!,
+                message.Id.ToString()!,
                 ChatItemType.Text,
                 senderUserName,
-                chat.Message,
+                message.Message,
                 null,
                 null,
-                chat.TimeStamp
+                message.TimeStamp
             ),
             null
         );
@@ -155,34 +156,24 @@ public class RoomMessageRepository : IRoomMessageRepository
             );
         }
 
-        var textFilter = Builders<RoomChat>.Filter.Eq(m => m.RoomId, roomId);
-        var audioFilter = Builders<AudioMessage>.Filter.Eq(a => a.RoomId, roomId);
-
+        var textFilter = Builders<RoomMessage>.Filter.Eq(m => m.RoomId, roomId);
+    
         if (messageParams.LastMessageId.HasValue)
         {
-            textFilter &= Builders<RoomChat>.Filter.Lt(m => m.Id, messageParams.LastMessageId.Value);
-            audioFilter &= Builders<AudioMessage>.Filter.Lt(a => a.Id, messageParams.LastMessageId.Value);
+            textFilter &= Builders<RoomMessage>.Filter.Lt(m => m.Id, messageParams.LastMessageId.Value);
         }
 
         int fetchSize = messageParams.Limit * 2;
 
-        List<RoomChat> textMessages =
+        List<RoomMessage> textMessages =
             await _collectionChats
                 .Find(textFilter)
                 .SortByDescending(m => m.Id)
                 .Limit(fetchSize)
                 .ToListAsync(cancellationToken);
-
-        List<AudioMessage> audioMessages =
-            await _collectionAudios
-                .Find(audioFilter)
-                .SortByDescending(a => a.Id)
-                .Limit(fetchSize)
-                .ToListAsync(cancellationToken);
-
+        
         List<ObjectId> senderIds = textMessages
             .Select(item => item.SenderId)
-            .Concat(audioMessages.Select(item => item.UploaderId))
             .Distinct()
             .ToList();
 
@@ -195,26 +186,15 @@ public class RoomMessageRepository : IRoomMessageRepository
 
         IEnumerable<ChatItemDto> textDtos = textMessages.Select(m => new ChatItemDto(
             m.Id.ToString()!,
-            ChatItemType.Text,
+            m.Type,
             userDict.GetValueOrDefault(m.SenderId) ?? "Unknown",
             m.Message,
-            null,
-            null,
+            m.Duration,
+            m.FileSize,
             m.TimeStamp
         ));
 
-        IEnumerable<ChatItemDto> audioDtos = audioMessages.Select(a => new ChatItemDto(
-            a.Id.ToString()!,
-            a.Type == AudioType.Voice ? ChatItemType.Voice : ChatItemType.Audio,
-            userDict.GetValueOrDefault(a.UploaderId) ?? "Unknown",
-            null,
-            a.Duration,
-            a.FileSize,
-            a.CreatedAt
-        ));
-
         List<ChatItemDto> combined = textDtos
-            .Concat(audioDtos)
             .OrderByDescending(item => item.CreatedAt)
             .Take(messageParams.Limit + 1)
             .ToList();

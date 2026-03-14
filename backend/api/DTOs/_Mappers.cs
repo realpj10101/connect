@@ -44,7 +44,7 @@ public static class Mappers
             audio.CreatedAt
         );
 
-    public static ChatItemDto ConvertAudioToChatItemDto(AudioMessage audio, string userName, ChatItemType chatItemType) =>
+    public static ChatItemDto ConvertAudioToChatItemDto(RoomMessage audio, string userName, ChatItemType chatItemType) =>
         new(
             audio.Id.ToString()!,
             chatItemType,
@@ -52,6 +52,6 @@ public static class Mappers
             null,
             audio.Duration,
             audio.FileSize,
-            audio.CreatedAt
+            audio.TimeStamp
         );
 }

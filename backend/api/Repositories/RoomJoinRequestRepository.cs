@@ -24,7 +24,7 @@ public class RoomJoinRequestRepository : IRoomJoinRequestRepository
         var database = client.GetDatabase(dbSettings.DatabaseName);
         _collectionUsers = database.GetCollection<AppUser>(AppVariablesExtensions.CollectionUsers);
         _collectionRooms = database.GetCollection<Room>(AppVariablesExtensions.CollectionRooms);
-        database.GetCollection<RoomChat>(AppVariablesExtensions.CollectionRoomsChats);
+        database.GetCollection<RoomMessage>(AppVariablesExtensions.CollectionRoomsChats);
         _collectionMembershipProposals =
             database.GetCollection<MembershipProposal>(AppVariablesExtensions.CollectionMembershipProposals);
 

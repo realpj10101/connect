@@ -36,7 +36,7 @@ public class AudioController(
         if (userId is null)
             return Unauthorized("You are not logged in. Please login again.");
 
-        OperationResult<AudioMessage> opResult =
+        OperationResult<RoomMessage> opResult =
             await audioRepository.UploadVoiceAsync(voiceFile, roomId, userId.Value, cancellationToken);
 
         if (!opResult.IsSuccess)
@@ -50,7 +50,7 @@ public class AudioController(
             };
         }
 
-        string? userName = await userRepository.GetUserNameByIdAsync(opResult.Result.UploaderId, cancellationToken);
+        string? userName = await userRepository.GetUserNameByIdAsync(opResult.Result.SenderId, cancellationToken);
 
         if (userName is null)
             userName = "Unknown";
@@ -79,7 +79,7 @@ public class AudioController(
         if (userId is null)
             return Unauthorized("You are not logged in. Please login again.");
     
-        OperationResult<AudioMessage> opResult = await audioRepository.UploadAudioAsync(audioFile, roomId, userId.Value, cancellationToken);
+        OperationResult<RoomMessage> opResult = await audioRepository.UploadAudioAsync(audioFile, roomId, userId.Value, cancellationToken);
         
         if (!opResult.IsSuccess)
         {
@@ -92,7 +92,7 @@ public class AudioController(
             };
         }
         
-        string? userName = await userRepository.GetUserNameByIdAsync(opResult.Result.UploaderId, cancellationToken);
+        string? userName = await userRepository.GetUserNameByIdAsync(opResult.Result.SenderId, cancellationToken);
 
         if (userName is null)
             userName = "Unknown";
@@ -118,7 +118,7 @@ public class AudioController(
         if (userId is null)
             return Unauthorized("You are not logged in. Please login again.");
 
-        OperationResult<AudioMessage> opResult =
+        OperationResult<RoomMessage> opResult =
             await audioRepository.GetAudioByIdAsync(audioId, userId.Value, cancellationToken);
 
         if (!opResult.IsSuccess)
@@ -132,7 +132,7 @@ public class AudioController(
             };
         }
 
-        var path = Path.Combine("wwwroot", opResult.Result.FilePath);
+        var path = Path.Combine("wwwroot", opResult.Result.FilePath!);
 
         if (!System.IO.File.Exists(path))
             return NotFound("Audio file not found on server.");
@@ -145,6 +145,6 @@ public class AudioController(
             4096,
             FileOptions.Asynchronous);
 
-        return File(stream, opResult.Result.MimeType, enableRangeProcessing: true);
+        return File(stream, opResult.Result.MimeType!, enableRangeProcessing: true);
     }
 }

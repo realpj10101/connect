@@ -32,7 +32,7 @@ public class RoomManagementRepository : IRoomManagementRepository
         var database = client.GetDatabase(dbSettings.DatabaseName);
         _collectionUsers = database.GetCollection<AppUser>(AppVariablesExtensions.CollectionUsers);
         _collectionRooms = database.GetCollection<Room>(AppVariablesExtensions.CollectionRooms);
-        database.GetCollection<RoomChat>(AppVariablesExtensions.CollectionRoomsChats);
+        database.GetCollection<RoomMessage>(AppVariablesExtensions.CollectionRoomsChats);
         database.GetCollection<MembershipProposal>(AppVariablesExtensions.CollectionMembershipProposals);
 
         _client = client;

@@ -15,36 +15,36 @@ public class AudioRepository : IAudioRepository
     #region Variables and Constructor
 
     private readonly IMongoCollection<Room> _collectionRooms;
-    private readonly IMongoCollection<AudioMessage> _collectionAudios;
+    private readonly IMongoCollection<RoomMessage> _collectionMessages;
     private readonly IAudioService _audioService;
 
     public AudioRepository(IMongoClient client, IMyMongoDbSettings dbSettings, IAudioService audioService)
     {
         var database = client.GetDatabase(dbSettings.DatabaseName);
         _collectionRooms = database.GetCollection<Room>(AppVariablesExtensions.CollectionRooms);
-        _collectionAudios = database.GetCollection<AudioMessage>(AppVariablesExtensions.CollectionAudios);
+        _collectionMessages = database.GetCollection<RoomMessage>(AppVariablesExtensions.CollectionRoomsChats);
 
         _audioService = audioService;
     }
 
     #endregion
 
-    public async Task<OperationResult<AudioMessage>> UploadVoiceAsync(IFormFile voiceFile, ObjectId roomId,
+    public async Task<OperationResult<RoomMessage>> UploadVoiceAsync(IFormFile voiceFile, ObjectId roomId,
         ObjectId userId, CancellationToken cancellationToken)
     {
-        return await ImplementUploadAudioAsync(voiceFile, roomId, userId, AudioType.Voice, cancellationToken);
+        return await ImplementUploadAudioAsync(voiceFile, roomId, userId, ChatItemType.Voice, cancellationToken);
     }
 
-    public async Task<OperationResult<AudioMessage>> UploadAudioAsync(IFormFile audioFile, ObjectId roomId, ObjectId userId, CancellationToken cancellationToken)
+    public async Task<OperationResult<RoomMessage>> UploadAudioAsync(IFormFile audioFile, ObjectId roomId, ObjectId userId, CancellationToken cancellationToken)
     {
-        return await ImplementUploadAudioAsync(audioFile, roomId, userId, AudioType.Audio, cancellationToken);
+        return await ImplementUploadAudioAsync(audioFile, roomId, userId, ChatItemType.Audio, cancellationToken);
     }
 
-    public async Task<OperationResult<AudioMessage>> GetAudioByIdAsync(ObjectId audioId, ObjectId userId,
+    public async Task<OperationResult<RoomMessage>> GetAudioByIdAsync(ObjectId audioId, ObjectId userId,
         CancellationToken cancellationToken)
     {
-        AudioMessage targetAudio =
-            await _collectionAudios.Find(doc => doc.Id == audioId).FirstOrDefaultAsync(cancellationToken);
+        RoomMessage targetAudio =
+            await _collectionMessages.Find(doc => doc.Id == audioId).FirstOrDefaultAsync(cancellationToken);
 
         if (targetAudio is null)
         {
@@ -89,8 +89,8 @@ public class AudioRepository : IAudioRepository
         );
     }
 
-    private async Task<OperationResult<AudioMessage>> ImplementUploadAudioAsync(IFormFile file, ObjectId roomId,
-        ObjectId userId, AudioType audioType, CancellationToken cancellationToken)
+    private async Task<OperationResult<RoomMessage>> ImplementUploadAudioAsync(IFormFile file, ObjectId roomId,
+        ObjectId userId, ChatItemType audioType, CancellationToken cancellationToken)
     {
           Room? targetRoom = await _collectionRooms.Find(doc => doc.Id == roomId).FirstOrDefaultAsync(cancellationToken);
 
@@ -144,25 +144,25 @@ public class AudioRepository : IAudioRepository
             Console.WriteLine($"Metadata Error: {ex.Message}");
         }
 
-        AudioMessage audioMessage = new AudioMessage
+        RoomMessage rooMessage = new RoomMessage()
         {
             Id = audioId,
             RoomId = roomId,
-            UploaderId = userId,
+            SenderId = userId,
             Type = audioType,
             FilePath = filePath,
             FileName = file.FileName,
             FileSize = file.Length,
             MimeType = file.ContentType,
             Duration = (int)duration.TotalMilliseconds,
-            CreatedAt = DateTime.UtcNow
+            TimeStamp = DateTime.UtcNow
         };
 
-        await _collectionAudios.InsertOneAsync(audioMessage, null, cancellationToken);
+        await _collectionMessages.InsertOneAsync(rooMessage, null, cancellationToken);
 
         return new(
             true,
-            audioMessage,
+            rooMessage,
             null
         ); 
     }
