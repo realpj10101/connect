@@ -26,6 +26,8 @@ import {
   formatTimer
 } from '../../../utils/room-view.utils';
 import { AudioPlayerService } from '../../../services/audio-player.service';
+import { Gallery, GalleryItem, ImageItem } from 'ng-gallery';
+import { Lightbox } from 'ng-gallery/lightbox';
 
 @Component({
   selector: 'app-room-view',
@@ -49,6 +51,8 @@ export class RoomViewComponent implements OnInit, OnDestroy {
   private _fB = inject(FormBuilder);
   private _snack = inject(MatSnackBar);
   private _ngZone = inject(NgZone);
+  private _gallery = inject(Gallery);
+  private _lightbox = inject(Lightbox);
 
   private _isTyping = false;
   private _sub: Subscription | undefined;
@@ -115,6 +119,79 @@ export class RoomViewComponent implements OnInit, OnDestroy {
     }
 
     this._sub?.unsubscribe();
+
+    this.messagesSig().forEach(m => {
+      if (m.imageUrl256) {
+        URL.revokeObjectURL(m.imageUrl256);
+      }
+
+      if (m.audioUrl) {
+        URL.revokeObjectURL(m.audioUrl);
+      }
+    })
+  }
+
+  // Image 
+  downloadImage(message: ChatItem): void {
+    message.isDownloading = true;
+    message.downloadProgress = 0;
+
+    this._roomMessagesService.streamMedia(message.id).subscribe(event => {
+      if (event.type === HttpEventType.DownloadProgress) {
+
+        if (event.total) {
+          message.downloadProgress = Math.round(
+            (event.loaded / event.total) * 100
+          );
+        }
+
+      }
+
+      if (event.type === HttpEventType.Response) {
+        const blob = event.body!;
+        message.imageUrl256 = URL.createObjectURL(blob);
+
+        message.isDownloading = false;
+      }
+    });
+  }
+
+  openEnlargedImage(message: ChatItem): void {
+    console.log('ok');
+
+
+    if (message.enlargedUrl) {
+      this.showLightBox(message);
+      return;
+    }
+
+    message.isDownloadingLarge = true;
+
+    this._roomMessagesService.streamMedia(message.id, 'enlarged')
+      .subscribe(event => {
+        if (event.type === HttpEventType.Response) {
+          const blob = event.body!;
+          message.enlargedUrl = URL.createObjectURL(blob);
+
+          message.isDownloadingLarge = false;
+
+          this.showLightBox(message);
+        }
+      })
+  }
+
+  showLightBox(message: ChatItem): void {
+    const items: GalleryItem[] = [
+      new ImageItem({
+        src: message.enlargedUrl,
+        thumb: message.imageUrl256
+      })
+    ];
+
+    const galleryRef = this._gallery.ref('chat-gallery');
+    galleryRef.load(items);
+
+    this._lightbox.open(0, 'chat-gallery');
   }
 
   // Audio & Voice
@@ -325,7 +402,7 @@ export class RoomViewComponent implements OnInit, OnDestroy {
 
     this._roomMessagingService.onRecieveAudio((msgs) => {
       console.log(msgs);
-      
+
       this.messagesSig.update(m => [...m, msgs]);
 
       this.scrollToBottom();

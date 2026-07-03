@@ -18,5 +18,6 @@ public class RoomMessage
     public long? FileSize { get; init; }
     public int? Duration { get; init; }
     public string? MimeType { get; init; } = string.Empty;
+    public Photo? Photo { get; init; }
     public DateTime TimeStamp { get; init; }
 }

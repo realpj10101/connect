@@ -27,8 +27,8 @@ export class AudioService {
     return this._http.post<ChatItem>(this._baseApiUrl + 'upload-audio/' + roomId, form);
   }
 
-  stream(id: string): Observable<HttpEvent<Blob>> {
-    return this._http.get<Blob>(this._baseApiUrl + 'stream/' + id, {
+  stream(audioId: string): Observable<HttpEvent<Blob>> {
+    return this._http.get<Blob>(this._baseApiUrl + 'stream/' + audioId, {
       responseType: 'blob' as 'json',
       observe: 'events',
       reportProgress: true

@@ -12,4 +12,7 @@ export interface ChatItem {
     isDownloading?: boolean;
     downloadProgress?: number;
     isDownloaded?: boolean;
+    imageUrl256?: string; // thumbnail 256
+    enlargedUrl?: string; // full image for lightbox
+    isDownloadingLarge?: boolean;
 }

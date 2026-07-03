@@ -17,6 +17,8 @@ public enum ErrorCode
     NotRoomMember,
     SaveToDiskFailed,
     AudioNotFound,
+    MessageNotFound,
+    InvalidFileType,
     NoMemberInRoom,
     MembershipPropNotExist,
     AlreadyAccepted,

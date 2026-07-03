@@ -33,14 +33,22 @@ public static class Mappers
             isOwner
         );
 
-    public static ChatItemDto ConvertAudioToChatItemDto(RoomMessage audio, string userName, ChatItemType chatItemType) =>
+    public static ChatItemDto
+        ConvertRoomMessageToChatItemDto(RoomMessage roomMessage, string userName, ChatItemType chatItemType) =>
         new(
-            audio.Id.ToString()!,
+            roomMessage.Id.ToString()!,
             chatItemType,
             userName,
             null,
-            audio.Duration,
-            audio.FileSize,
-            audio.TimeStamp
+            roomMessage.Duration,
+            roomMessage.FileSize,
+            roomMessage.TimeStamp
+        );
+
+    public static Photo ConvertPhotoUrlsToPhoto(string[] photoUrls) =>
+        new(
+            photoUrls[0],
+            photoUrls[1],
+            photoUrls[2]
         );
 }

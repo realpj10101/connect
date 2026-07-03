@@ -1,6 +1,6 @@
 import { inject, Injectable } from '@angular/core';
 import { environment } from '../../environments/environment.development';
-import { HttpClient, HttpParams } from '@angular/common/http';
+import { HttpClient, HttpEvent, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { MessagePage, MessageRes } from '../models/message.model';
 import { MessageParams } from '../models/helpers/messageParams.model';
@@ -24,5 +24,16 @@ export class RoomMessageService {
     return this._http.get<MessagePage>(this._baseApiUrl + 'get-room-messages/' + roomId, {
       params: params
     });
+  }
+
+  streamMedia(messageId: string, size: string = '256'): Observable<HttpEvent<Blob>> {
+    let params = new HttpParams().set('size', size);
+
+    return this._http.get(this._baseApiUrl + 'stream/' + messageId, {
+      params: params,
+      responseType: 'blob',
+      observe: 'events',
+      reportProgress: true
+    })
   }
 }

@@ -431,6 +431,39 @@
                                 }
                             }
                         }
+
+                        .image-message {
+                            display: flex;
+                            flex-direction: column;
+                            gap: 6px;
+
+                            .image-download-btn {
+                                width: 36px;
+                                height: 36px;
+                                background: oklch(0.55 0.18 260);
+                                border-radius: 8px;
+                                display: flex;
+                                align-items: center;
+                                justify-content: center;
+                                cursor: pointer;
+
+                                .icon {
+                                    width: 18px;
+                                    height: 18px;
+                                    color: white;
+                                }
+                            }
+
+                            .chat-image {
+                                max-width: 260px;
+                                border-radius: 10px;
+                            }
+
+                            .image-meta {
+                                font-size: 11px;
+                                opacity: 0.7;
+                            }
+                        }
                     }
                 }
             }

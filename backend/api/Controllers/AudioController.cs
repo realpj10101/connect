@@ -19,6 +19,7 @@ public class AudioController(
     ITokenService tokenService,
     IAudioRepository audioRepository,
     IUserRepository userRepository,
+    IRoomMessageRepository roomMessageRepository,
     IHubContext<RoomMessagingHub> _hub) : BaseApiController
 {
     [HttpPost("upload-voice/{roomId}")]
@@ -55,7 +56,7 @@ public class AudioController(
         if (userName is null)
             userName = "Unknown";
 
-        ChatItemDto audioResponseDto = Mappers.ConvertAudioToChatItemDto(opResult.Result, userName, ChatItemType.Voice);
+        ChatItemDto audioResponseDto = Mappers.ConvertRoomMessageToChatItemDto(opResult.Result, userName, ChatItemType.Voice);
 
         await _hub.Clients.Group(roomId.ToString())
             .SendAsync("ReceiveVoice", audioResponseDto, cancellationToken);
@@ -97,7 +98,7 @@ public class AudioController(
         if (userName is null)
             userName = "Unknown";
 
-        ChatItemDto audioResponseDto = Mappers.ConvertAudioToChatItemDto(opResult.Result, userName, ChatItemType.Audio);
+        ChatItemDto audioResponseDto = Mappers.ConvertRoomMessageToChatItemDto(opResult.Result, userName, ChatItemType.Audio);
         
         await _hub.Clients.Group(roomId.ToString())
             .SendAsync("ReceiveAudio", audioResponseDto, cancellationToken);
@@ -119,7 +120,7 @@ public class AudioController(
             return Unauthorized("You are not logged in. Please login again.");
 
         OperationResult<RoomMessage> opResult =
-            await audioRepository.GetAudioByIdAsync(audioId, userId.Value, cancellationToken);
+            await roomMessageRepository.GetMessageByIdAsync(audioId, userId.Value, cancellationToken);
 
         if (!opResult.IsSuccess)
         {

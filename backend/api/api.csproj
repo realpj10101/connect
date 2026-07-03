@@ -18,4 +18,8 @@
     <Folder Include="wwwroot\" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\Image_Processing_WwwRoot\Image_Processing_WwwRoot.csproj" />
+  </ItemGroup>
+
 </Project>
